@@ -1,171 +1,182 @@
-# 🚦 Traffic Sign Detection & Classification using Computer Vision
+# 🚦 Traffic Sign Detection & Classification
 
-A complete, end-to-end Computer Vision project developed using Python, OpenCV, Scikit-Learn, and TensorFlow/Keras on the **German Traffic Sign Recognition Benchmark (GTSRB)** dataset.
+A comprehensive Computer Vision and Deep Learning system for traffic sign recognition and localization using the **German Traffic Sign Recognition Benchmark (GTSRB)** dataset.
 
-This repository covers **all 6 units** of the Computer Vision course curriculum. Each module is runnable independently and outputs presentation-ready visual plots saved in `results/`.
+This repository implements a multi-stage computer vision pipeline combining digital image processing, feature extraction, traditional machine learning (SVM), and deep learning (Convolutional Neural Networks) to detect and classify 43 traffic sign categories.
 
 ---
 
 ## 📋 Table of Contents
 1. [Project Overview](#-project-overview)
-2. [Syllabus Unit Mapping](#-syllabus-unit-mapping)
-3. [Slide-by-Slide PPT Outline & Content](#-slide-by-slide-ppt-outline--content)
-4. [Computer Vision Pipeline Architecture](#-computer-vision-pipeline-architecture)
-5. [Final Experimental Results](#-final-experimental-results)
-6. [Visual Artifacts Gallery](#-visual-artifacts-gallery)
-7. [Repository Structure](#-repository-structure)
-8. [How to Setup & Run](#-how-to-setup--run)
-9. [Viva Voce Q&A Cheat Sheet](#-viva-voce-qa-cheat-sheet)
+2. [Key Features](#-key-features)
+3. [Computer Vision Pipeline Architecture](#-computer-vision-pipeline-architecture)
+4. [Methodology & Technical Components](#-methodology--technical-components)
+5. [Presentation & PPT Structure Guide](#-presentation--ppt-structure-guide)
+6. [Experimental Results & Evaluation](#-experimental-results--evaluation)
+7. [Visual Artifacts Gallery](#-visual-artifacts-gallery)
+8. [Repository Structure](#-repository-structure)
+9. [Installation & Usage](#-installation--usage)
+10. [Viva Voce Q&A Reference](#-viva-voce-qa-reference)
 
 ---
 
 ## 🎯 Project Overview
 
-Traffic sign recognition is a vital component of **Autonomous Driving Systems (ADS)** and **Advanced Driver Assistance Systems (ADAS)**. This project demonstrates how classical computer vision techniques (edge detection, color thresholding, HOG descriptors, PCA, watershed segmentation) work alongside deep learning architectures (Convolutional Neural Networks) to solve traffic sign classification and localization.
+Traffic sign recognition is an essential capability for **Autonomous Vehicles (AV)** and **Advanced Driver Assistance Systems (ADAS)**. Real-world conditions introduce challenges such as poor lighting, severe weather, motion blur, and partial occlusions.
 
+This project delivers an end-to-end solution that takes raw road imagery, enhances contrast, extracts spatial and color features, performs region segmentation, localizes sign candidate regions with bounding boxes, and classifies traffic signs with high precision.
+
+### Key Highlights
 - **Dataset**: German Traffic Sign Recognition Benchmark (GTSRB)
-- **Total Classes**: 43 Traffic Sign Categories (Speed Limits, Warnings, Mandatory Signs, Yield, Stop, etc.)
-- **Resolution**: Normalized to $32 \times 32 \times 3$ RGB pixels
-- **CNN Test Accuracy**: **96.91%**
+- **Categories**: 43 distinct traffic sign classes (Speed Limits, Warnings, Mandatory, Prohibitory)
+- **Image Resolution**: Normalized to $32 \times 32 \times 3$ RGB pixels
+- **CNN Classifier Test Accuracy**: **96.91%**
 - **SVM Baseline Test Accuracy**: **75.40%**
 
 ---
 
-## 📚 Syllabus Unit Mapping
+## ✨ Key Features
 
-| Unit | Course Topic | Technique Implemented | Python Script | Output Visual Artifact |
-| :---: | :--- | :--- | :--- | :--- |
-| **Unit 1** | Introduction & Vision Systems | Class Distribution Analysis across 43 classes | [`src/preprocessing.py`](src/preprocessing.py) | `results/class_distribution.png` |
-| **Unit 2** | Preprocessing | Image Resizing ($32\times32$), $[0,1]$ Normalization, CLAHE Equalization | [`src/preprocessing.py`](src/preprocessing.py) | `results/histogram_eq_comparison.png` |
-| **Unit 3** | Feature Detection & Extraction | Canny Edge Detector, HOG Descriptors, 2D PCA Scatter Plot | [`src/feature_extraction.py`](src/feature_extraction.py) | `results/edge_detection_samples.png`<br>`results/hog_visualization.png`<br>`results/pca_visualization.png` |
-| **Unit 4** | Image Classification | Classical SVM Baseline vs. 4-Layer Keras CNN Model | [`src/classification.py`](src/classification.py) | `results/training_curves.png`<br>`models/traffic_sign_cnn.keras`<br>`models/svm_baseline.pkl` |
-| **Unit 5** | Object Detection | Contour-based Candidate Region Proposal + CNN Classification | [`src/detection.py`](src/detection.py) | `results/detection_samples.png` |
-| **Unit 6** | Image Segmentation | HSV Color Thresholding (Red/Blue signs) & Watershed Segmentation | [`src/segmentation.py`](src/segmentation.py) | `results/segmentation_samples.png` |
-| **Eval** | Evaluation & Reporting | Multi-class Confusion Matrix Heatmap, F1 Report, Prediction Samples | [`src/evaluate.py`](src/evaluate.py) | `results/confusion_matrix.png`<br>`results/predictions_samples.png`<br>`results/summary.txt` |
-
----
-
-## 📺 Slide-by-Slide PPT Outline & Content
-
-Use the content below to populate your presentation slides directly:
-
-### **Slide 1: Title Slide**
-- **Title**: Traffic Sign Detection & Classification using Computer Vision
-- **Subtitle**: A Unit-wise CV Pipeline Implementation on GTSRB Dataset
-- **Key Highlight**: Classical Computer Vision Techniques + Deep Convolutional Neural Networks
-
-### **Slide 2: Problem Statement & Motivation**
-- **Problem**: Autonomous vehicles require real-time, highly accurate traffic sign recognition under varying illumination, weather, and occlusions.
-- **Objective**: Build a modular CV pipeline covering preprocessing, feature detection, segmentation, classical ML, and deep CNN classification across 43 classes.
-- **Dataset**: GTSRB dataset containing cropped traffic sign images categorized into 43 distinct classes.
-
-### **Slide 3: Unit 1 - Vision System & Dataset Distribution**
-- **Syllabus Topic**: Vision Systems, Image Acquisition & Dataset Overview.
-- **Implementation**: Extracted total class frequencies across 43 GTSRB sign categories.
-- **Key Observation**: Highly imbalanced dataset — frequent signs (e.g. 50km/h speed limit) have >2,000 samples, whereas rare signs (e.g. 20km/h speed limit) have ~200 samples.
-- **Visual Asset**: `results/class_distribution.png`
-
-### **Slide 4: Unit 2 - Image Preprocessing & Contrast Enhancement**
-- **Syllabus Topic**: Image Normalization & Histogram Equalization.
-- **Techniques Applied**:
-  1. **Fixed Resizing**: Uniform $32 \times 32 \times 3$ resolution.
-  2. **Min-Max Normalization**: Pixel scaling $I_{\text{norm}} = \frac{I}{255.0} \in [0.0, 1.0]$.
-  3. **CLAHE (Contrast Limited Adaptive Histogram Equalization)**: Enhances local contrast on Y channel of YCrCb color space to handle extreme shadows and bright glare.
-- **Visual Asset**: `results/histogram_eq_comparison.png`
-
-### **Slide 5: Unit 3 - Feature Detection & Dimensionality Reduction**
-- **Syllabus Topic**: Edges, HOG Descriptors, PCA.
-- **Techniques Applied**:
-  1. **Canny Edge Detection**: Detects sharp intensity gradients to capture sign geometry (triangles, circles, octagons).
-  2. **HOG (Histogram of Oriented Gradients)**: Captures local edge direction distributions across $8 \times 8$ pixel cells.
-  3. **PCA (Principal Component Analysis)**: Reduces $3072$-dimensional flattened pixel vectors to $2\text{D}$ space for cluster visualization.
-- **Visual Assets**: `results/edge_detection_samples.png`, `results/hog_visualization.png`, `results/pca_visualization.png`
-
-### **Slide 6: Unit 4 - Image Classification (SVM vs. CNN)**
-- **Syllabus Topic**: Machine Learning & Deep Learning Classifiers.
-- **Classical Baseline**: Linear Support Vector Machine (SVM) trained on HOG features (**75.40% Accuracy**).
-- **CNN Architecture**:
-  - Conv2D(32, 3x3) $\rightarrow$ BatchNorm $\rightarrow$ Conv2D(32, 3x3) $\rightarrow$ MaxPool(2x2) $\rightarrow$ Dropout(0.25)
-  - Conv2D(64, 3x3) $\rightarrow$ BatchNorm $\rightarrow$ Conv2D(64, 3x3) $\rightarrow$ MaxPool(2x2) $\rightarrow$ Dropout(0.30)
-  - Flatten $\rightarrow$ Dense(256) $\rightarrow$ BatchNorm $\rightarrow$ Dropout(0.50) $\rightarrow$ Softmax(43)
-- **Result**: CNN achieves **96.91% Test Accuracy**.
-- **Visual Asset**: `results/training_curves.png`
-
-### **Slide 7: Unit 5 - Object Detection & Bounding Boxes**
-- **Syllabus Topic**: Bounding Box Localization & Object Recognition.
-- **Methodology**:
-  1. **Color-based Candidate Region Proposal**: HSV mask isolates red/blue sign candidate shapes.
-  2. **Contour Extraction & Aspect Ratio Filter**: Filters bounding boxes ($0.65 \le w/h \le 1.45$).
-  3. **CNN Verification**: Passes candidate crops into the trained CNN for prediction and confidence scoring.
-- **Visual Asset**: `results/detection_samples.png`
-
-### **Slide 8: Unit 6 - Image Segmentation**
-- **Syllabus Topic**: Thresholding, Color-based Segmentation, Region-based Watershed.
-- **Techniques Applied**:
-  1. **HSV Thresholding**: Isolates red (Hue [0-10], [170-180]) and blue (Hue [100-130]) sign region masks.
-  2. **Watershed Algorithm**: Distance transform + marker-based morphological segmentation to separate foreground sign shapes from background context.
-- **Visual Asset**: `results/segmentation_samples.png`
-
-### **Slide 9: Experimental Results & Model Evaluation**
-- **Confusion Matrix**: $43 \times 43$ heatmap displaying high diagonal precision.
-- **Comparative Metrics**:
-  - SVM Accuracy: **75.40%**
-  - CNN Accuracy: **96.91%**
-- **Visual Assets**: `results/confusion_matrix.png`, `results/predictions_samples.png`, `results/summary.txt`
-
-### **Slide 10: Conclusion & Viva Summary**
-- Developed a complete end-to-end Computer Vision pipeline covering Units 1 to 6.
-- Demonstrated superiority of learned CNN features (96.91%) over hand-crafted HOG+SVM features (75.40%).
-- Successfully generated high-contrast visual artifacts for each processing stage.
+- **Automated Data Preprocessing**: Standardized resizing, min-max pixel scaling $[0.0, 1.0]$, and multithreaded dataset processing.
+- **Contrast Enhancement**: Contrast Limited Adaptive Histogram Equalization (CLAHE) applied to the luminance channel to handle glare and shadow regions.
+- **Feature Extraction & Dimensionality Reduction**: Integrated Canny edge detection, Histogram of Oriented Gradients (HOG) extraction, and 2D Principal Component Analysis (PCA) visualization.
+- **Color & Watershed Segmentation**: HSV color space thresholding targeting sign hue ranges combined with Watershed marker-based boundary extraction.
+- **Dual Classification Engine**: Comparison between a classical Support Vector Machine (SVM) baseline and a 4-Layer Convolutional Neural Network (CNN).
+- **Candidate Region Object Detection**: Contour-based region proposal algorithm with aspect-ratio filtering and CNN verification for bounding box visualization.
 
 ---
 
 ## 🏗️ Computer Vision Pipeline Architecture
 
 ```
-[ Camera Image Acquisition ]
-             │
-             ▼
- [ Unit 1 & 2: Preprocessing ] ────► Resizing (32x32), Normalization [0,1], CLAHE Equalization
-             │
-             ▼
-[ Unit 3 & 6: Feature & Segmentation ] ──► Canny Edges, HOG Descriptors, PCA 2D, HSV Masking & Watershed
-             │
-             ▼
- [ Unit 4: Image Classification ] ────► Classical SVM Baseline (75.40%) vs 4-Layer CNN (96.91%)
-             │
-             ▼
-[ Unit 5: Object Detection ] ────────► Contour Candidate Proposal + CNN Bounding Box Classification
-             │
-             ▼
- [ Evaluation & Reporting ] ─────────► 43-Class Confusion Matrix, F1 Report, Prediction Samples
+[ Input Road Image ]
+          │
+          ▼
+[ Data Preprocessing ] ────────► Resizing (32x32), Normalization [0,1], CLAHE Equalization
+          │
+          ▼
+[ Feature & Segmentation ] ────► Canny Edges, HOG Descriptors, 2D PCA, HSV Masking & Watershed
+          │
+          ▼
+[ Model Classification ] ──────► Classical SVM Baseline (75.40%) vs. 4-Layer Keras CNN (96.91%)
+          │
+          ▼
+[ Object Detection ] ──────────► Contour Region Proposals + CNN Bounding Box Predictions
+          │
+          ▼
+[ Evaluation & Reporting ] ────► Confusion Matrix Heatmap, Classification Metrics, Error Samples
 ```
 
 ---
 
-## 📊 Final Experimental Results
+## 🔬 Methodology & Technical Components
 
-| Model | Technique | Test Accuracy | Output Model File |
+### 1. Data Preprocessing & Contrast Enhancement
+Raw traffic images often suffer from uneven illumination. Images are resized to $32 \times 32$ pixels and normalized. To enhance low-contrast inputs, images are converted to the **YCrCb** color space, and **CLAHE** is applied exclusively to the luminance ($Y$) channel:
+$$I_{\text{CLAHE}} = \text{CLAHE}(Y), \quad \text{recombined with } Cr, Cb$$
+
+### 2. Feature Extraction (Canny, HOG, PCA)
+- **Canny Edge Detection**: Highlights structural sign shapes (triangles, octagons, circles) using dual-threshold gradient intensity checking.
+- **Histogram of Oriented Gradients (HOG)**: Computes local gradient magnitude and orientation distributions across $8 \times 8$ cells, creating a robust feature representation.
+- **Principal Component Analysis (PCA)**: Projects high-dimensional pixel vectors ($3072$-dimensions) down to $2\text{D}$ space to analyze class distribution and variance.
+
+### 3. Segmentation (HSV & Watershed)
+- **HSV Color Segmentation**: Converts images to HSV space and applies color boundaries to isolate red (Hue $[0,10] \cup [170,180]$) and blue (Hue $[100,130]$) sign regions.
+- **Watershed Algorithm**: Utilizes distance transforms and morphological markers to separate foreground sign contours from complex background textures.
+
+### 4. Classification Models
+- **Classical Baseline**: Support Vector Machine (SVM) trained on extracted HOG descriptors.
+- **Deep CNN Architecture**:
+  - `Conv2D(32, 3x3)` $\rightarrow$ `BatchNormalization` $\rightarrow$ `Conv2D(32, 3x3)` $\rightarrow$ `MaxPool(2x2)` $\rightarrow$ `Dropout(0.25)`
+  - `Conv2D(64, 3x3)` $\rightarrow$ `BatchNormalization` $\rightarrow$ `Conv2D(64, 3x3)` $\rightarrow$ `MaxPool(2x2)` $\rightarrow$ `Dropout(0.30)`
+  - `Flatten` $\rightarrow$ `Dense(256)` $\rightarrow$ `BatchNormalization` $\rightarrow$ `Dropout(0.50)` $\rightarrow$ `Dense(43, Softmax)`
+
+### 5. Object Detection & Localization
+Combines classical candidate region proposal (HSV color filtering + contour bounding boxes with aspect ratio $0.65 \le w/h \le 1.45$) with the trained CNN classifier to draw labeled bounding boxes and confidence scores over test scenes.
+
+---
+
+## 📺 Presentation & PPT Structure Guide
+
+Use the slide outlines below to prepare your presentation slides directly:
+
+### **Slide 1: Title Slide**
+- **Title**: Traffic Sign Detection & Classification using Computer Vision
+- **Subtitle**: End-to-End Pipeline Implementation on GTSRB Dataset
+- **Focus**: Traditional Image Processing + Deep Learning (CNN)
+
+### **Slide 2: Problem Statement & Significance**
+- Real-time traffic sign detection is critical for Autonomous Vehicles (AV) and ADAS.
+- Challenges: Variable lighting, shadows, weather conditions, motion blur, and class imbalance.
+- Goal: Design an intelligent system capable of detection, segmentation, and classification across 43 categories.
+
+### **Slide 3: System Pipeline Architecture**
+- Overview of the 5 key stages: *Preprocessing $\rightarrow$ Feature Extraction $\rightarrow$ Segmentation $\rightarrow$ Classification $\rightarrow$ Object Detection*.
+- Comparison between traditional machine learning (HOG + SVM) and deep learning (CNN).
+
+### **Slide 4: Data Preprocessing & CLAHE Enhancement**
+- Resizing images to a uniform $32 \times 32 \times 3$ size and normalizing pixel values to $[0, 1]$.
+- Applying Contrast Limited Adaptive Histogram Equalization (CLAHE) on the Y channel in YCrCb color space to improve visibility in dark/shadowed images.
+- Visual: `results/histogram_eq_comparison.png`
+
+### **Slide 5: Feature Extraction & Dimensionality Reduction**
+- **Canny Edge Detection**: Captures geometric contours (circles, octagons, triangles).
+- **HOG Descriptors**: Encodes directional gradient distributions in $8 \times 8$ local cell blocks.
+- **2D PCA Projection**: Visualizes cluster separation across classes in reduced 2D feature space.
+- Visuals: `results/edge_detection_samples.png`, `results/hog_visualization.png`, `results/pca_visualization.png`
+
+### **Slide 6: Image Segmentation (HSV & Watershed)**
+- **HSV Thresholding**: Isolates characteristic traffic sign colors (Red and Blue hue channels).
+- **Watershed Algorithm**: Uses morphological opening/closing and distance transforms to separate sign boundaries from background elements.
+- Visual: `results/segmentation_samples.png`
+
+### **Slide 7: Model Architectures & Training**
+- **SVM Baseline**: Linear SVM trained on HOG features (**75.40% Accuracy**).
+- **CNN Architecture**: 4 Convolutional layers with Batch Normalization, Max Pooling, and Dropout regularization.
+- **CNN Result**: Achieves **96.91% Test Accuracy**.
+- Visual: `results/training_curves.png`
+
+### **Slide 8: Object Detection & Candidate Proposals**
+- Proposes candidate regions using HSV color masks and contour bounding boxes ($0.65 \le w/h \le 1.45$).
+- Passes candidate patches to the trained CNN model for classification and confidence evaluation.
+- Displays color-coded bounding boxes with predicted labels and confidence scores.
+- Visual: `results/detection_samples.png`
+
+### **Slide 9: Evaluation & Performance Breakdown**
+- Multi-class confusion matrix ($43 \times 43$) heatmap showing low off-diagonal confusion.
+- Evaluation on test set: High precision, recall, and F1-scores across categories.
+- Visuals: `results/confusion_matrix.png`, `results/predictions_samples.png`, `results/summary.txt`
+
+### **Slide 10: Conclusion & Key Learnings**
+- Successfully built a complete, robust traffic sign detection and classification pipeline.
+- Demonstrated that learned CNN features significantly outperform hand-crafted HOG features (96.91% vs. 75.40%).
+- System is lightweight and efficient for CPU inference.
+
+---
+
+## 📊 Experimental Results & Evaluation
+
+| Model | Representation | Test Accuracy | Model File |
 | :--- | :--- | :---: | :--- |
-| **Classical ML Baseline** | Linear SVM on HOG Descriptors | **75.40%** | `models/svm_baseline.pkl` |
-| **Deep Learning CNN** | 4-Layer ConvNet + Dropout + BatchNorm | **96.91%** | `models/traffic_sign_cnn.keras` |
+| **Linear SVM Baseline** | Hand-crafted HOG Features | **75.40%** | `models/svm_baseline.pkl` |
+| **4-Layer CNN** | Learned Convolutional Feature Maps | **96.91%** | `models/traffic_sign_cnn.keras` |
 
 ---
 
 ## 🖼️ Visual Artifacts Gallery
 
-All plots are stored in `results/` formatted in high-contrast dark-mode theme for slides:
+All generated plots are stored in `results/` using a dark-mode palette suitable for slides:
 
-- `results/class_distribution.png`: Class sample frequency bar chart across 43 GTSRB categories.
-- `histogram_eq_comparison.png`: CLAHE histogram equalization grid before vs. after.
-- `edge_detection_samples.png`: Canny edge maps across traffic sign categories.
-- `hog_visualization.png`: HOG gradient orientation maps.
-- `pca_visualization.png`: 2D PCA scatter plot showing class clustering.
-- `segmentation_samples.png`: HSV color mask & Watershed region segmentation outputs.
-- `training_curves.png`: Loss & Accuracy curves over training epochs.
-- `detection_samples.png`: Annotated bounding boxes with predicted class name and confidence.
-- `confusion_matrix.png`: Multi-class $43 \times 43$ confusion matrix heatmap.
-- `predictions_samples.png`: Correct vs. misclassified sign predictions grid.
+- `results/class_distribution.png`: Bar chart displaying sample frequency across 43 GTSRB categories.
+- `results/histogram_eq_comparison.png`: CLAHE contrast enhancement comparison grid.
+- `results/edge_detection_samples.png`: Canny edge detector visual outputs.
+- `results/hog_visualization.png`: HOG gradient orientation maps.
+- `results/pca_visualization.png`: 2D PCA scatter plot showing class clustering.
+- `results/segmentation_samples.png`: HSV color mask and Watershed boundary segmentation.
+- `results/training_curves.png`: Training vs. Validation accuracy and loss curves.
+- `results/detection_samples.png`: Annotated bounding boxes with predicted class and confidence.
+- `results/confusion_matrix.png`: $43 \times 43$ multi-class confusion matrix heatmap.
+- `results/predictions_samples.png`: Correct vs. misclassified sample predictions.
 
 ---
 
@@ -173,67 +184,66 @@ All plots are stored in `results/` formatted in high-contrast dark-mode theme fo
 
 ```
 CV_Traffic_Sign_Project/
-├── src/                   <- Modular Python scripts per unit
-│   ├── preprocessing.py   <- Unit 1 & Unit 2 (Class distribution, resizing, CLAHE)
-│   ├── feature_extraction.py <- Unit 3 (Canny, HOG, PCA)
-│   ├── segmentation.py    <- Unit 6 (HSV color thresholding & Watershed)
-│   ├── classification.py  <- Unit 4 (SVM baseline & CNN model training)
-│   ├── detection.py       <- Unit 5 (Contour region proposal + CNN detection)
-│   └── evaluate.py        <- Evaluation module (Confusion matrix & metrics)
-├── models/                <- Trained model artifacts (.keras and .pkl)
+├── src/                   <- Modular Python scripts
+│   ├── preprocessing.py   <- Data loading, resizing, CLAHE contrast enhancement
+│   ├── feature_extraction.py <- Canny edge detection, HOG descriptors, PCA 2D scatter plot
+│   ├── segmentation.py    <- HSV color thresholding & Watershed segmentation
+│   ├── classification.py  <- SVM baseline & Keras CNN model training
+│   ├── detection.py       <- Contour region proposal & CNN object detection
+│   └── evaluate.py        <- Model evaluation, confusion matrix & metrics
+├── models/                <- Saved trained models (.keras and .pkl)
 ├── results/               <- Generated visual PNG plots and summary text
-├── requirements.txt       <- Dependencies list
-├── .gitignore             <- Excludes dataset binaries and temporary files
+├── requirements.txt       <- Project dependencies
+├── .gitignore             <- Excludes raw dataset binaries and temp files
 └── README.md              <- Project documentation & presentation guide
 ```
 
 ---
 
-## 🚀 How to Setup & Run
+## 🚀 Installation & Usage
 
-### 1. Install Dependencies
+### Prerequisites
+- Python 3.10+ or Python 3.12
+- Required libraries listed in `requirements.txt`:
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+### Running Modules
+You can execute each script independently:
+
 ```bash
-pip install -r requirements.txt
-```
+# 1. Preprocessing & Data Loading
+python src/preprocessing.py
 
-### 2. Run Modules Individually
-- **Preprocessing (Unit 1 & 2)**:
-  ```bash
-  python src/preprocessing.py
-  ```
-- **Feature Extraction (Unit 3)**:
-  ```bash
-  python src/feature_extraction.py
-  ```
-- **Image Segmentation (Unit 6)**:
-  ```bash
-  python src/segmentation.py
-  ```
-- **Classification (Unit 4)**:
-  ```bash
-  python src/classification.py
-  ```
-- **Detection (Unit 5)**:
-  ```bash
-  python src/detection.py
-  ```
-- **Evaluation & Reporting**:
-  ```bash
-  python src/evaluate.py
-  ```
+# 2. Feature Extraction (Canny, HOG, PCA)
+python src/feature_extraction.py
+
+# 3. Image Segmentation (HSV & Watershed)
+python src/segmentation.py
+
+# 4. Model Training (SVM Baseline & CNN)
+python src/classification.py
+
+# 5. Object Detection & Localization
+python src/detection.py
+
+# 6. Evaluation & Confusion Matrix
+python src/evaluate.py
+```
 
 ---
 
-## 💡 Viva Voce Q&A Cheat Sheet
+## 💡 Viva Voce Q&A Reference
 
-**Q1: Why apply CLAHE histogram equalization instead of standard histogram equalization?**
-> *Answer*: Standard histogram equalization operates globally and can over-amplify contrast in bright areas. CLAHE (Contrast Limited Adaptive Histogram Equalization) operates on localized $4\times4$ contextual regions and caps contrast enhancement, making it ideal for traffic signs under harsh sunlight or shadows.
+**Q1: Why convert images to YCrCb space for CLAHE instead of RGB?**
+> *Answer*: RGB channels correlate color and brightness together. In YCrCb, the $Y$ channel represents luminance (brightness), while $Cr$ and $Cb$ store chrominance (color). Applying CLAHE exclusively to $Y$ enhances contrast without distorting color information.
 
-**Q2: What is the benefit of HOG descriptors?**
-> *Answer*: HOG (Histogram of Oriented Gradients) captures object appearance and shape by calculating edge gradient directions in localized cells. It is invariant to subtle illumination changes.
+**Q2: How does HOG feature extraction work?**
+> *Answer*: HOG divides an image into small connected cells ($8 \times 8$ pixels), calculates gradient magnitude and direction for each pixel, and builds a 9-bin orientation histogram per cell. Neighboring cells are normalized in blocks to improve invariance to lighting changes.
 
-**Q3: Why does the CNN outperform the SVM classifier?**
-> *Answer*: SVM relies on hand-crafted features (HOG) that cannot easily capture complex high-level spatial abstractions. CNN automatically learns multi-level hierarchical representations (edges $\rightarrow$ shapes $\rightarrow$ sign symbols) directly from raw pixel data.
+**Q3: Why does the CNN achieve significantly higher accuracy than SVM?**
+> *Answer*: SVM relies on hand-crafted HOG features that capture fixed edge gradients. The CNN dynamically learns multi-layer hierarchical representations (low-level edges $\rightarrow$ mid-level shapes $\rightarrow$ high-level sign symbols) directly optimized for the classification task.
 
-**Q4: How does your simplified object detection pipeline work?**
-> *Answer*: We use classical HSV color thresholding (red/blue sign colors) and contour aspect-ratio filtering to propose candidate bounding box regions, which are then passed into our trained CNN model for classification and confidence filtering.
+**Q4: How does your candidate region proposal detector operate?**
+> *Answer*: It converts road images to HSV color space, masks red and blue sign colors, extracts candidate contours filtered by aspect ratio ($0.65 \le w/h \le 1.45$), crops candidate patches, and feeds them into the trained CNN model for confidence verification and labeling.
