@@ -1,0 +1,2 @@
+SVM Baseline Accuracy: 75.40%
+CNN Model Accuracy:    96.91%
